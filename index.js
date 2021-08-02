@@ -1,18 +1,3 @@
-// Your code here
-// dataEmployees = [
-//     ["Thor", "Odinsson", "Electrical Engineer", 45],
-//     ["Loki", "Laufeysson-Odinsson", "HR Representative", 35],
-//     ["Natalia", "Romanov", "CEO", 150],
-//     ["Darcey", "Lewis", "Intern", 15],
-//     ["Jarvis", "Stark", "CIO", 125],
-//     ["Anthony", "Stark", "Angel Investor", 300],
-//     ["Byron", "Poodle", "Mascot", 3],
-//     ["Julius", "Caesar", "General", 27],
-//     ["Rafiki", "", "Aide", 10],
-//     ["Simba", "", "King", 100]
-//   ]
-
-
 const createEmployeeRecord = (employeeInfo) => {
 
     let employeeRecord = {
@@ -37,4 +22,64 @@ const createEmployeeRecords = (employeeRecords) => {
     return arrayOfRecords
 }
 
-// createEmployeeRecords(dataEmployees)
+const createTimeInEvent = (employeeRecord, dateStamp) => {
+
+    employeeRecord.timeInEvents.push({
+        type: 'TimeIn',
+        hour: parseInt(dateStamp.slice(11,15), 10),
+        date: dateStamp.slice(0,10)
+    })
+    
+    return employeeRecord
+}
+const createTimeOutEvent = (employeeRecord, dateStamp) => {
+    employeeRecord.timeOutEvents.push({
+        type: 'TimeOut',
+        hour: parseInt(dateStamp.slice(11,15), 10),
+        date: dateStamp.slice(0,10)
+    })
+    
+    return employeeRecord
+}
+
+const hoursWorkedOnDate = (employeeRecord, date) => {
+    let timeIn = 0;
+    let timeOut = 0;
+    employeeRecord.timeInEvents.forEach(elem => {
+        if (elem.date === date) {
+            timeIn = elem.hour
+        }
+
+    })
+    employeeRecord.timeOutEvents.forEach(elem => {
+        if (elem.date === date) {
+            timeOut = elem.hour
+        }
+    })
+    return (timeOut - timeIn) / 100;
+}
+
+const wagesEarnedOnDate = (employeeRecord, date) => {
+    return (hoursWorkedOnDate(employeeRecord, date) * employeeRecord.payPerHour)
+}
+
+const allWagesFor = (employeeRecord) => {
+    let newArr = employeeRecord.timeInEvents.map(elem => elem.date)
+    let arrayTotalPay = [];
+    for (const i of newArr) {
+        arrayTotalPay.push(wagesEarnedOnDate(employeeRecord, i))
+    }
+    let totalPay = arrayTotalPay.reduce(function(numb, total) {
+        return numb + total}, 0)
+    return totalPay;
+}
+
+const calculatePayroll = (empRecords) => {
+    let arrayTotalPay = empRecords.map(elem => allWagesFor(elem));
+    let totalPay = arrayTotalPay.reduce(((elem, total) => elem + total), 0)
+    return totalPay
+}
+const findEmployeeByFirstName = (srcArray, firstName) => {
+    let foundByName = srcArray.filter(elem => elem.firstName === firstName)
+    return foundByName[0]
+}
